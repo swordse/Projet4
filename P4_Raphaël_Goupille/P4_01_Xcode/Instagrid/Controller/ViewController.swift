@@ -24,6 +24,11 @@ final class ViewController: UIViewController {
     // MARK: - Cycle View life Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+        
+        centralView.addGestureRecognizer(swipeGestureRecognizer)
+        
         picker.delegate = self
         
         presentationButtons[1].isSelected = true
@@ -42,12 +47,6 @@ final class ViewController: UIViewController {
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
         coordinator.animate(alongsideTransition: { _ in
-            guard let windowInterfaceOrientation = self.windowInterfaceOrientation else { return }
-            if windowInterfaceOrientation.isPortrait {
-                self.swipeGestureRecognizer.direction.subtract([.left])
-            } else if windowInterfaceOrientation.isLandscape {
-                self.swipeGestureRecognizer.direction.subtract([.up])
-            }
             self.swipeGestureUpdate()
         }, completion: nil)
     }
@@ -99,8 +98,6 @@ final class ViewController: UIViewController {
 
     // MARK: - Swipe gesture methods
     private func swipeGestureUpdate() {
-        swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
-
         // update the direction and views based on the orientation
         if let orientation = windowInterfaceOrientation {
             if orientation.isPortrait {
@@ -115,8 +112,6 @@ final class ViewController: UIViewController {
                 swipeLabel.text = "Swipe left to share"
             }
         }
-        // add swipeGesture to central view
-        centralView.addGestureRecognizer(swipeGestureRecognizer)
     }
 
     // func called when the user swipe the view
