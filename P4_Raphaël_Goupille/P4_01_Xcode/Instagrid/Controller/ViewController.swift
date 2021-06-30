@@ -13,6 +13,8 @@ final class ViewController: UIViewController {
     private var swipeGestureRecognizer = UISwipeGestureRecognizer()
     private var selectedImageViewButton = 0
     private let picker = UIImagePickerController()
+    // keep track of the number of images set by the user, if equal 0 an alert is shown after the swipe and before the share
+    private var numberOfImages = 0
 
     // MARK: - Outlets
     @IBOutlet weak var swipeArrowImageView: UIImageView!
@@ -128,7 +130,11 @@ final class ViewController: UIViewController {
                 self.centralView.transform = CGAffineTransform.init(translationX: 0, y: -screenHeight)
             }
         } completion: { _ in
+            if self.numberOfImages == 0 {
+                self.noImageAlert()
+            } else {
             self.shareImage()
+        }
         }
     }
     // MARK: - Share image methods
@@ -144,6 +150,22 @@ final class ViewController: UIViewController {
                 self.centralView.alpha = 1
             }, completion: nil)
         }
+    }
+    
+    // alert shown before the share if the user has never added an image
+    func noImageAlert() {
+        let alert = UIAlertController(title: "You haven't added any images!", message: "Are you sure you want to share this creation?", preferredStyle: .alert)
+        let actionShare = UIAlertAction(title: "Yes", style: .default) { _ in
+            self.shareImage()
+        }
+        let actionDontShare = UIAlertAction(title: "No", style: .default) { _ in
+            UIView.animate(withDuration: 0.2) {
+                self.centralView.transform = .identity
+            }
+        }
+        alert.addAction(actionShare)
+        alert.addAction(actionDontShare)
+        present(alert, animated: true, completion: nil)
     }
 }
 
